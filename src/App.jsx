@@ -1,22 +1,20 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
 import Auth from "./pages/auth";
 import Chat from "./pages/chat";
-import { Profile } from "./pages/profile";
+import Profile from "./pages/profile";
 
-const App = () => {
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/[profile]" element={<Profile />} />
-
-        <Route path="*" element={<Navigate to="/auth" />} />
+        <Route path="/auth" element={<Auth/>}></Route>
+        <Route path="/chat" element={<Chat/>}></Route>
+        <Route path="/profile" element={<Profile/>}></Route>
+        <Route path="/*" element={<Navigate to="/auth"/>}></Route>
       </Routes>
     </BrowserRouter>
   );
-};
+}
 
 export default App;
