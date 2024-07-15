@@ -4,15 +4,63 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-
+import { toast } from "sonner";
+import apiClient from "@/lib/api-client.js";
+import { LOGIN_ROUTE, SIGNUP_ROUTE } from "@/utils/constants";
+import { useNavigate } from "react-router-dom";
 const Auth = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleLogin = async () => {};
+  const validateSignup = () => {
+    if (email === "" || password === "" || confirmPassword === "") {
+      toast.error("Please fill all fields");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Password amd confirm password do not match");
+      return false;
+    }
+    return true;
+  };
+  const validateLogin = () => {
+    if (email === "" || password === "") {
+      toast.error("Please fill all fields");
+      return false;
+    }
 
-  const handleSignup = async () => {};
+    return true;
+  };
+
+  const handleLogin = async () => {
+    if (validateLogin()) {
+      const response = await apiClient.post(
+        LOGIN_ROUTE,
+        { email, password },
+        { withCredentials: true }
+      );
+      if(response.data.user.id) {
+        if(response.data.user.profileSetup) navigate("/chat")
+        else navigate("/profile");
+      }
+      console.log(response);
+    }
+  };
+  const handleSignup = async () => {
+    if (validateSignup()) {
+      const response = await apiClient.post(
+        SIGNUP_ROUTE,
+        { email, password },
+        { withCredentials: true }
+      );
+      if (response.status === 201) {
+        navigate("/profile");
+      }
+      console.log(response);
+    }
+  };
 
   return (
     <div className="h-[100vh] w-[100vw] flex items-center justify-center">
@@ -28,7 +76,7 @@ const Auth = () => {
             </p>
           </div>
           <div className="flex items-center justify-center w-full">
-            <Tabs className="w-3/4">
+            <Tabs className="w-3/4" defaultValue="login">
               <TabsList className="bg-transparent rounded-none w-full">
                 <TabsTrigger
                   value="login"
@@ -58,9 +106,11 @@ const Auth = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <Button className="rounded-full p-6" onClick={handleLogin}>Login</Button>
+                <Button className="rounded-full p-6" onClick={handleLogin}>
+                  Login
+                </Button>
               </TabsContent>
-              <TabsContent value="signup" className="flex flex-col gap-5" >
+              <TabsContent value="signup" className="flex flex-col gap-5">
                 <Input
                   placeholder="Email"
                   type="email"
@@ -82,13 +132,15 @@ const Auth = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                <Button className="rounded-full p-6" onClick={handleSignup}>Signup</Button>
+                <Button className="rounded-full p-6" onClick={handleSignup}>
+                  Signup
+                </Button>
               </TabsContent>
             </Tabs>
           </div>
         </div>
         <div className="hidden xl:flex justify-center items-center">
-            <img src={Background} alt="background login" className="h-[500px]" />
+          <img src={Background} alt="background login" className="h-[500px]" />
         </div>
       </div>
     </div>
