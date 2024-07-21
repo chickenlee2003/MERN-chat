@@ -9,9 +9,11 @@ import apiClient from "@/lib/api-client.js";
 import { LOGIN_ROUTE, SIGNUP_ROUTE } from "@/utils/constants";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store";
+
+
 const Auth = () => {
   const navigate = useNavigate();
-  const {setUserInfo} = useAppStore();
+  const { setUserInfo } = useAppStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -43,12 +45,19 @@ const Auth = () => {
         { email, password },
         { withCredentials: true }
       );
-      if(response.data.user.id) {
+      if (response.data.user.id) {
         setUserInfo(response.data.user);
-        if(response.data.user.profileSetup) navigate("/chat")
-        else navigate("/profile");
+        if (response.data.user.profileSetup) {
+          console.log("Navigating to chat");
+          navigate("/chat");
+        } else {
+          console.log("Navigating to profile");
+          navigate("/profile");
+        }
       }
       console.log(response);
+    } else {
+      console.log("Invalid login credentials");
     }
   };
   const handleSignup = async () => {
